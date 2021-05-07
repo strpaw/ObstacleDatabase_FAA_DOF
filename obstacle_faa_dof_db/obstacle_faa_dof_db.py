@@ -188,9 +188,16 @@ class ObstacleFAADigitialObstacleFileDB:
         if self.first_start == True:
             self.first_start = False
             self.dlg = ObstacleFAADigitialObstacleFileDBDialog()
+            self.dlg.mQgsFileWidgetDigitalObstacleFile.setFilter('*.dat')
+            self.dlg.mQgsFileWidgetImportLog.setFilter("*.log")
+            self.dlg.pushButtonCancel.clicked.connect(self.dlg.close)
 
         # show the dialog
         self.dlg.show()
+        self.dlg.tabWidget.setCurrentIndex(0)
+        self.dlg.mQgsFileWidgetDigitalObstacleFile.lineEdit().clear()
+        self.dlg.mQgsFileWidgetImportLog.lineEdit().clear()
+        self.dlg.pushButtonShowImportLogFile.setEnabled(False)
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
