@@ -30,6 +30,9 @@ from .resources import *
 # Import the code for the dialog
 from .obstacle_faa_dof_db_dialog import ObstacleFAADigitialObstacleFileDBDialog
 import os.path
+from qgis.core import *
+from qgis.gui import *
+from .obstacle_database_tools import ObstacleDatabaseTools
 
 
 class ObstacleFAADigitialObstacleFileDB:
@@ -66,6 +69,9 @@ class ObstacleFAADigitialObstacleFileDB:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = None
+
+        self.data_uri = None  # Data source uri for layers from PostGIS database
+        self.obstacle_type_map = {}
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -179,6 +185,28 @@ class ObstacleFAADigitialObstacleFileDB:
                 action)
             self.iface.removeToolBarIcon(action)
 
+    def set_data_uri(self):
+        self.obstacle_layer = QgsProject.instance().mapLayersByName("obstacle")[0]
+        provider = self.obstacle_layer.dataProvider()
+        self.data_uri = QgsDataSourceUri(provider.dataSourceUri())
+
+    def set_obstacle_type_map(self):
+        query = """SELECT
+                        obst_type,
+                        obst_type_id
+                    FROM
+                        obstacle_type
+                    ORDER BY
+                        obst_type;"""
+        db_tools = ObstacleDatabaseTools(self.data_uri)
+        obst_type_data = db_tools.select_data_from_obstacle_db(query)
+
+        for obst_type, obst_type_id in obst_type_data:
+            self.obstacle_type_map[obst_type] = obst_type_id
+
+    def initialize_plugin_variables(self):
+        self.set_data_uri()
+        self.set_obstacle_type_map()
 
     def run(self):
         """Run method that performs all the real work"""
@@ -198,6 +226,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.dlg.mQgsFileWidgetDigitalObstacleFile.lineEdit().clear()
         self.dlg.mQgsFileWidgetImportLog.lineEdit().clear()
         self.dlg.pushButtonShowImportLogFile.setEnabled(False)
+        self.initialize_plugin_variables()
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
