@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/plugins/obstacle_faa_dof_db" >
+        <file>icon.png</file>
+    </qresource>
+</RCC>
