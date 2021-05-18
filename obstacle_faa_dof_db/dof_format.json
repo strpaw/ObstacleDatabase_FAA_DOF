@@ -1,0 +1,100 @@
+{
+  "version": "2019-09-08",
+  "fields": [
+    {
+      "field_name": "oas_code",
+      "column_from": 1,
+      "column_to": 2
+    },
+    {
+      "field_name": "obstacle_number",
+      "column_from": 4,
+      "column_to": 9
+    },
+    {
+      "field_name": "verification_status",
+      "column_from": 11,
+      "column_to": 11
+    },
+    {
+      "field_name": "country_identifier",
+      "column_from": 13,
+      "column_to": 14
+    },
+    {
+      "field_name": "state_identifier",
+      "column_from": 16,
+      "column_to": 17
+    },
+    {
+      "field_name": "city_name",
+      "column_from": 19,
+      "column_to": 34
+    },
+    {
+      "field_name": "latitude",
+      "column_from": 36,
+      "column_to": 47
+    },
+    {
+      "field_name": "longitude",
+      "column_from": 49,
+      "column_to": 61
+    },
+    {
+      "field_name": "obstacle_type",
+      "column_from": 63,
+      "column_to": 80
+    },
+    {
+      "field_name": "quantity",
+      "column_from": 82,
+      "column_to": 82
+    },
+    {
+      "field_name": "agl_ht",
+      "column_from": 84,
+      "column_to": 88
+    },
+    {
+      "field_name": "amsl_ht",
+      "column_from": 90,
+      "column_to": 94
+    },
+    {
+      "field_name": "lighting",
+      "column_from": 96,
+      "column_to": 96
+    },
+    {
+      "field_name": "horizontal_accuracy",
+      "column_from": 98,
+      "column_to": 98
+    },
+    {
+      "field_name": "vertical_accuracy",
+      "column_from": 100,
+      "column_to": 100
+    },
+    {
+      "field_name": "mark_indicator",
+      "column_from": 102,
+      "column_to": 102
+    },
+    {
+      "field_name": "FAA_study_number",
+      "column_from": 104,
+      "column_to": 117
+    },
+    {
+      "field_name": "action",
+      "column_from": 119,
+      "column_to": 119
+    },
+    {
+      "field_name": "julian_date",
+      "column_from": 121,
+      "column_to": 127
+    }
+  ]
+}

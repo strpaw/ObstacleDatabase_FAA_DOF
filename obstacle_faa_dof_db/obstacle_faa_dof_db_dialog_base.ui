@@ -17,13 +17,13 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>20</y>
+     <y>10</y>
      <width>1001</width>
      <height>491</height>
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -99,6 +99,129 @@
     <attribute name="title">
      <string>Insert Single Obstacle</string>
     </attribute>
+   </widget>
+   <widget class="QWidget" name="tab_3">
+    <attribute name="title">
+     <string>Convert</string>
+    </attribute>
+    <widget class="QgsFileWidget" name="mQgsFileWidgetConversionDOFInput">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>20</y>
+       <width>821</width>
+       <height>27</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>25</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Digital Obstacle File:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>65</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Output format:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>95</y>
+       <width>111</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Output file:</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxConversionDOFOutputFormat">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>60</y>
+       <width>131</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>[choose format]</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>csv</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>shp</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>kml</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QgsFileWidget" name="mQgsFileWidgetConversionDOFOutput">
+     <property name="geometry">
+      <rect>
+       <x>150</x>
+       <y>90</y>
+       <width>821</width>
+       <height>27</height>
+      </rect>
+     </property>
+     <property name="storageMode">
+      <enum>QgsFileWidget::SaveFile</enum>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBoxAddOutputToMap">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>140</y>
+       <width>231</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Add output to  map canvas</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButtonConvertDOF">
+     <property name="geometry">
+      <rect>
+       <x>860</x>
+       <y>400</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Convert</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QPushButton" name="pushButtonCancel">

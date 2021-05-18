@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction
+from qgis.PyQt.QtWidgets import QAction, QWidget, QMessageBox
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -33,6 +33,7 @@ import os.path
 from qgis.core import *
 from qgis.gui import *
 from .obstacle_database_tools import ObstacleDatabaseTools
+from .dof_tools import *
 
 
 class ObstacleFAADigitialObstacleFileDB:
@@ -50,6 +51,11 @@ class ObstacleFAADigitialObstacleFileDB:
         self.iface = iface
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
+
+        self.conversion_input_path = None
+        self.conversion_output_format = None
+        self.conversion_output_path = None
+
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
@@ -204,9 +210,58 @@ class ObstacleFAADigitialObstacleFileDB:
         for obst_type, obst_type_id in obst_type_data:
             self.obstacle_type_map[obst_type] = obst_type_id
 
+    def clear_dof_conversion_settings(self):
+        self.conversion_input_path = None
+        self.conversion_output_format = None
+        self.conversion_output_path = None
+
+    def set_conversion_output_format(self):
+        selected_format = self.dlg.comboBoxConversionDOFOutputFormat.currentText()
+        if selected_format != "[choose format]":
+            self.conversion_output_format = selected_format
+            self.dlg.mQgsFileWidgetConversionDOFOutput.setFilter('*.{}'.format(self.conversion_output_format))
+        else:
+            self.conversion_output_format = None
+            self.dlg.mQgsFileWidgetConversionDOFOutput.setFilter('')
+
+    def is_conversion_input_valid(self):
+        err_msg = ""
+        self.conversion_input_path = self.dlg.mQgsFileWidgetConversionDOFInput.filePath()
+        self.conversion_output_path = self.dlg.mQgsFileWidgetConversionDOFOutput.filePath()
+
+        if not os.path.isfile(self.conversion_input_path):
+            err_msg += "Select input DOF file for conversion!\n"
+        if not self.conversion_output_format:
+            err_msg += "Select output format!\n"
+        if not self.conversion_output_path:
+            err_msg += "Select output converted file!\n"
+
+        if err_msg:
+            QMessageBox.critical(QWidget(), "Message", err_msg)
+        else:
+            return True
+
+    def add_csv_layer(self, path_csv):
+        uri = 'file:///{}?delimiter=";"&xField=lon_dd&yField=lat_dd'.format(path_csv)
+        layer_csv = QgsVectorLayer(uri, 'CSVConvertedDOF', 'delimitedtext')
+        crs = layer_csv.crs()
+        crs.createFromId(4326)
+        layer_csv.setCrs(crs)
+        QgsProject.instance().addMapLayer(layer_csv)
+
+    def convert_dof(self):
+        if self.is_conversion_input_valid():
+            plugin_dir = os.path.dirname(__file__)
+            path_dof_format = os.path.join(plugin_dir, 'dof_format.json')
+            dof_tool = DOFTools(path_dof_format)
+            if self.conversion_output_format == "csv":
+                dof_tool.convert_dof_to_csv(self.conversion_input_path, self.conversion_output_path)
+                self.add_csv_layer(self.conversion_output_path)
+
     def initialize_plugin_variables(self):
         self.set_data_uri()
         self.set_obstacle_type_map()
+        self.clear_dof_conversion_settings()
 
     def run(self):
         """Run method that performs all the real work"""
@@ -218,6 +273,9 @@ class ObstacleFAADigitialObstacleFileDB:
             self.dlg = ObstacleFAADigitialObstacleFileDBDialog()
             self.dlg.mQgsFileWidgetDigitalObstacleFile.setFilter('*.dat')
             self.dlg.mQgsFileWidgetImportLog.setFilter("*.log")
+            self.dlg.mQgsFileWidgetConversionDOFInput.setFilter('*.dat')
+            self.dlg.comboBoxConversionDOFOutputFormat.currentIndexChanged.connect(self.set_conversion_output_format)
+            self.dlg.pushButtonConvertDOF.clicked.connect(self.convert_dof)
             self.dlg.pushButtonCancel.clicked.connect(self.dlg.close)
 
         # show the dialog
@@ -226,6 +284,10 @@ class ObstacleFAADigitialObstacleFileDB:
         self.dlg.mQgsFileWidgetDigitalObstacleFile.lineEdit().clear()
         self.dlg.mQgsFileWidgetImportLog.lineEdit().clear()
         self.dlg.pushButtonShowImportLogFile.setEnabled(False)
+        self.dlg.mQgsFileWidgetConversionDOFInput.lineEdit().clear()
+        self.dlg.comboBoxConversionDOFOutputFormat.setCurrentIndex(0)
+        self.dlg.mQgsFileWidgetConversionDOFOutput.lineEdit().clear()
+        self.dlg.checkBoxAddOutputToMap.setChecked(False)
         self.initialize_plugin_variables()
         # Run the dialog event loop
         result = self.dlg.exec_()
