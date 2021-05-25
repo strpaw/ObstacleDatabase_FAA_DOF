@@ -241,13 +241,17 @@ class ObstacleFAADigitialObstacleFileDB:
         else:
             return True
 
-    def add_csv_layer(self, path_csv):
-        uri = 'file:///{}?delimiter=";"&xField=lon_dd&yField=lat_dd'.format(path_csv)
-        layer_csv = QgsVectorLayer(uri, 'CSVConvertedDOF', 'delimitedtext')
-        crs = layer_csv.crs()
-        crs.createFromId(4326)
-        layer_csv.setCrs(crs)
-        QgsProject.instance().addMapLayer(layer_csv)
+    def get_converted_layer(self):
+        if self.conversion_output_format == "csv":
+            uri = 'file:///{}?delimiter=";"&xField=lon_dd&yField=lat_dd'.format(self.conversion_output_path)
+            layer = QgsVectorLayer(uri, 'CSVConvertedDOF', 'delimitedtext')
+            crs = layer.crs()
+            crs.createFromId(4326)
+            layer.setCrs(crs)
+        else:
+            layer = QgsVectorLayer(self.conversion_output_path,
+                                   "{}ConvertedDOF".format(self.conversion_output_format.upper()), "ogr")
+        return layer
 
     def convert_dof(self):
         if self.is_conversion_input_valid():
@@ -256,11 +260,14 @@ class ObstacleFAADigitialObstacleFileDB:
             dof_tool = DOFTools(path_dof_format)
             if self.conversion_output_format == "csv":
                 dof_tool.convert_dof_to_csv(self.conversion_input_path, self.conversion_output_path)
-                self.add_csv_layer(self.conversion_output_path)
             else:
                 dof_tool.convert_dof_to_geographic_formats(self.conversion_input_path,
                                                            self.conversion_output_path,
                                                            self.conversion_output_format)
+        if self.dlg.checkBoxAddOutputToMap.isChecked():
+            layer = self.get_converted_layer()
+            QgsProject.instance().addMapLayer(layer)
+
 
     def initialize_plugin_variables(self):
         self.set_data_uri()
