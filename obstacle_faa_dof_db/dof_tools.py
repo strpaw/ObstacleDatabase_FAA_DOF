@@ -1,5 +1,16 @@
 import json
 import csv
+from qgis.PyQt.QtCore import QVariant
+from qgis.core import (
+    QgsFields,
+    QgsField,
+    QgsCoordinateReferenceSystem,
+    QgsVectorFileWriter,
+    QgsWkbTypes,
+    QgsFeature,
+    QgsPointXY,
+    QgsGeometry
+)
 
 
 class DOFTools:
@@ -67,3 +78,57 @@ class DOFTools:
                     if line_nr >= 5:
                         obstacle_data = DOFTools.parse_dof_line(self.dof_format, line)
                         writer.writerow(obstacle_data)
+
+    @staticmethod
+    def get_fields():
+        fields = QgsFields()
+        fields.append(QgsField("oas_code", QVariant.String))
+        fields.append(QgsField("obstacle_number", QVariant.String))
+        fields.append(QgsField("verification_status", QVariant.String))
+        fields.append(QgsField("country_identifier", QVariant.String))
+        fields.append(QgsField("state_identifier", QVariant.String))
+        fields.append(QgsField("city_name", QVariant.String))
+        fields.append(QgsField("latitude", QVariant.String))
+        fields.append(QgsField("longitude", QVariant.String))
+        fields.append(QgsField("obstacle_type", QVariant.String))
+        fields.append(QgsField("quantity", QVariant.String))
+        fields.append(QgsField("agl_ht", QVariant.String))
+        fields.append(QgsField("amsl_ht", QVariant.String))
+        fields.append(QgsField("lighting", QVariant.String))
+        fields.append(QgsField("horizontal_accuracy", QVariant.String))
+        fields.append(QgsField("vertical_accuracy", QVariant.String))
+        fields.append(QgsField("mark_indicator", QVariant.String))
+        fields.append(QgsField("FAA_study_number", QVariant.String))
+        fields.append(QgsField("action", QVariant.String))
+        fields.append(QgsField("julian_date", QVariant.String))
+        return fields
+
+    @staticmethod
+    def get_writer(fields, output_path, extension):
+        crs = QgsCoordinateReferenceSystem()
+        crs.createFromId(4326)
+        if extension == "shp":
+            writer = QgsVectorFileWriter(output_path, "CP1250", fields, QgsWkbTypes.Point, crs,
+                                         "ESRI Shapefile")
+        elif extension == "kml":
+            writer = QgsVectorFileWriter(output_path, "CP1250", fields, QgsWkbTypes.Point, crs,
+                                         "KML")
+        return writer
+
+    def convert_dof_to_geographic_formats(self, dof_path, output_path, extension):
+        fields = DOFTools.get_fields()
+        fnames = fields.names()
+        writer = DOFTools.get_writer(fields, output_path, extension)
+
+        feat = QgsFeature()
+        with open(dof_path, 'r') as input_dof:
+            line_nr = 0
+            for line in input_dof:
+                line_nr += 1
+                if line_nr >= 5:
+                    obstacle_data = DOFTools.parse_dof_line(self.dof_format, line)
+                    feat.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(float(obstacle_data["lon_dd"]),
+                                                                        float(obstacle_data["lat_dd"]))))
+                    feat.setAttributes([obstacle_data[name] for name in fnames])
+                    writer.addFeature(feat)
+        del writer

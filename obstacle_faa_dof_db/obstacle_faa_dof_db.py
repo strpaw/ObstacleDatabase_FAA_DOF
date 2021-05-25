@@ -257,6 +257,10 @@ class ObstacleFAADigitialObstacleFileDB:
             if self.conversion_output_format == "csv":
                 dof_tool.convert_dof_to_csv(self.conversion_input_path, self.conversion_output_path)
                 self.add_csv_layer(self.conversion_output_path)
+            else:
+                dof_tool.convert_dof_to_geographic_formats(self.conversion_input_path,
+                                                           self.conversion_output_path,
+                                                           self.conversion_output_format)
 
     def initialize_plugin_variables(self):
         self.set_data_uri()
