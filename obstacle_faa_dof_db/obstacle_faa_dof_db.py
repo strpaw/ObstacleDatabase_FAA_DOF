@@ -55,6 +55,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.conversion_input_path = None
         self.conversion_output_format = None
         self.conversion_output_path = None
+        self.obstacle_type_map = {}
 
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
@@ -77,7 +78,6 @@ class ObstacleFAADigitialObstacleFileDB:
         self.first_start = None
 
         self.data_uri = None  # Data source uri for layers from PostGIS database
-        self.obstacle_type_map = {}
 
     # noinspection PyMethodMayBeStatic
     def tr(self, message):
@@ -196,7 +196,7 @@ class ObstacleFAADigitialObstacleFileDB:
         provider = self.obstacle_layer.dataProvider()
         self.data_uri = QgsDataSourceUri(provider.dataSourceUri())
 
-    def set_obstacle_type_map(self):
+    def set_obstacle_type_map(self, db_tools):
         query = """SELECT
                         obst_type,
                         obst_type_id
@@ -204,11 +204,17 @@ class ObstacleFAADigitialObstacleFileDB:
                         obstacle_type
                     ORDER BY
                         obst_type;"""
-        db_tools = ObstacleDatabaseTools(self.data_uri)
         obst_type_data = db_tools.select_data_from_obstacle_db(query)
 
         for obst_type, obst_type_id in obst_type_data:
             self.obstacle_type_map[obst_type] = obst_type_id
+
+    def set_database_map(self):
+        db_tools = ObstacleDatabaseTools(self.data_uri)
+        self.set_obstacle_type_map(db_tools)
+
+    def fill_obstacle_type(self):
+        self.dlg.comboBoxObstacleType.addItems(self.obstacle_type_map.keys())
 
     def clear_dof_conversion_settings(self):
         self.conversion_input_path = None
@@ -268,11 +274,11 @@ class ObstacleFAADigitialObstacleFileDB:
             layer = self.get_converted_layer()
             QgsProject.instance().addMapLayer(layer)
 
-
     def initialize_plugin_variables(self):
         self.set_data_uri()
-        self.set_obstacle_type_map()
         self.clear_dof_conversion_settings()
+        self.set_database_map()
+        self.fill_obstacle_type()
 
     def run(self):
         """Run method that performs all the real work"""
