@@ -57,6 +57,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.conversion_output_path = None
         self.obstacle_type_map = {}
         self.marking_map = {}
+        self.lighting_map = {}
 
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
@@ -222,16 +223,32 @@ class ObstacleFAADigitialObstacleFileDB:
         for marking_desc, marking_code in marking_data:
             self.marking_map[marking_desc] = marking_code
 
+    def set_lighting_map(self, db_tools):
+        query = """SELECT 
+                        lighting_desc,
+                        lighting_code
+                   FROM 
+                        lighting
+                   ORDER BY
+                        lighting_desc;"""
+        lighting_data = db_tools.select_data_from_obstacle_db(query)
+        for lighting_desc, lighting_code in lighting_data:
+            self.lighting_map[lighting_desc] = lighting_code
+
     def set_database_map(self):
         db_tools = ObstacleDatabaseTools(self.data_uri)
         self.set_obstacle_type_map(db_tools)
         self.set_marking_map(db_tools)
+        self.set_lighting_map(db_tools)
 
     def fill_obstacle_type(self):
         self.dlg.comboBoxObstacleType.addItems(self.obstacle_type_map.keys())
 
     def fill_marking(self):
         self.dlg.comboBoxMarking.addItems(self.marking_map.keys())
+
+    def fill_lighting(self):
+        self.dlg.comboBoxLighting.addItems(self.lighting_map.keys())
 
     def clear_dof_conversion_settings(self):
         self.conversion_input_path = None
@@ -297,6 +314,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.set_database_map()
         self.fill_obstacle_type()
         self.fill_marking()
+        self.fill_lighting()
 
     def run(self):
         """Run method that performs all the real work"""
