@@ -55,6 +55,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.conversion_input_path = None
         self.conversion_output_format = None
         self.conversion_output_path = None
+        self.state_map_map = {}
         self.obstacle_type_map = {}
         self.marking_map = {}
         self.lighting_map = {}
@@ -198,6 +199,18 @@ class ObstacleFAADigitialObstacleFileDB:
         provider = self.obstacle_layer.dataProvider()
         self.data_uri = QgsDataSourceUri(provider.dataSourceUri())
 
+    def set_state_map(self, db_tools):
+        query = """SELECT
+                        state_name,
+                        state_id
+                    FROM
+                        us_state
+                    ORDER BY
+                        state_name;"""
+        state_data = db_tools.select_data_from_obstacle_db(query)
+        for state_name, state_id in state_data:
+            self.state_map_map[state_name] = state_id
+
     def set_obstacle_type_map(self, db_tools):
         query = """SELECT
                         obst_type,
@@ -237,9 +250,13 @@ class ObstacleFAADigitialObstacleFileDB:
 
     def set_database_map(self):
         db_tools = ObstacleDatabaseTools(self.data_uri)
+        self.set_state_map(db_tools)
         self.set_obstacle_type_map(db_tools)
         self.set_marking_map(db_tools)
         self.set_lighting_map(db_tools)
+
+    def fill_state(self):
+        self.dlg.comboBoxState.addItems(self.state_map_map)
 
     def fill_obstacle_type(self):
         self.dlg.comboBoxObstacleType.addItems(self.obstacle_type_map.keys())
@@ -312,6 +329,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.set_data_uri()
         self.clear_dof_conversion_settings()
         self.set_database_map()
+        self.fill_state()
         self.fill_obstacle_type()
         self.fill_marking()
         self.fill_lighting()
