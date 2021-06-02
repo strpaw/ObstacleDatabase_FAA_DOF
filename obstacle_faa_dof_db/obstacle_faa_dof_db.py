@@ -60,6 +60,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.marking_map = {}
         self.lighting_map = {}
         self.hor_acc_map = {}
+        self.vert_acc_map = {}
 
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
@@ -264,6 +265,19 @@ class ObstacleFAADigitialObstacleFileDB:
         for accuracy, hor_acc_code in hor_acc_data:
             self.hor_acc_map[accuracy] = hor_acc_code
 
+    def set_vertical_accuracy_map(self, db_tools):
+        query = """SELECT
+                        CASE tolerance_value
+                            WHEN -1 THEN 'Unknown'
+                        ELSE
+                            tolerance_value || ' ' || tolerance_uom
+                        END AS accuracy,
+                            vert_acc_code
+                    FROM vert_acc;"""
+        vert_acc_data = db_tools.select_data_from_obstacle_db(query)
+        for accuracy, vert_acc_code in vert_acc_data:
+            self.vert_acc_map[accuracy] = vert_acc_code
+
     def set_database_map(self):
         db_tools = ObstacleDatabaseTools(self.data_uri)
         self.set_state_map(db_tools)
@@ -271,6 +285,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.set_marking_map(db_tools)
         self.set_lighting_map(db_tools)
         self.set_horizontal_accuracy_map(db_tools)
+        self.set_vertical_accuracy_map(db_tools)
 
     def fill_state(self):
         self.dlg.comboBoxState.addItems(self.state_map_map)
@@ -286,6 +301,9 @@ class ObstacleFAADigitialObstacleFileDB:
 
     def fill_hor_acc(self):
         self.dlg.comboBoxHorlAcc.addItems(self.hor_acc_map.keys())
+
+    def fill_vert_acc(self):
+        self.dlg.comboBoxVertAcc.addItems(self.vert_acc_map.keys())
 
     def clear_dof_conversion_settings(self):
         self.conversion_input_path = None
@@ -354,6 +372,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.fill_marking()
         self.fill_lighting()
         self.fill_hor_acc()
+        self.fill_vert_acc()
 
     def run(self):
         """Run method that performs all the real work"""
