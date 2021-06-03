@@ -61,6 +61,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.lighting_map = {}
         self.hor_acc_map = {}
         self.vert_acc_map = {}
+        self.verif_status_map = {}
 
         # initialize locale
         locale = QSettings().value('locale/userLocale')[0:2]
@@ -278,6 +279,17 @@ class ObstacleFAADigitialObstacleFileDB:
         for accuracy, vert_acc_code in vert_acc_data:
             self.vert_acc_map[accuracy] = vert_acc_code
 
+    def set_verif_status_map(self, db_tools):
+        query = """SELECT
+                        status_desc,
+                        verif_status_code
+                   FROM
+                        verif_status
+                  ORDER BY status_desc;"""
+        verif_status_data = db_tools.select_data_from_obstacle_db(query)
+        for status, code in verif_status_data:
+            self.verif_status_map[status] = code
+
     def set_database_map(self):
         db_tools = ObstacleDatabaseTools(self.data_uri)
         self.set_state_map(db_tools)
@@ -286,6 +298,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.set_lighting_map(db_tools)
         self.set_horizontal_accuracy_map(db_tools)
         self.set_vertical_accuracy_map(db_tools)
+        self.set_verif_status_map(db_tools)
 
     def fill_state(self):
         self.dlg.comboBoxState.addItems(self.state_map_map)
@@ -304,6 +317,9 @@ class ObstacleFAADigitialObstacleFileDB:
 
     def fill_vert_acc(self):
         self.dlg.comboBoxVertAcc.addItems(self.vert_acc_map.keys())
+
+    def fill_verif_status(self):
+        self.dlg.comboBoxVerificationStatus.addItems(self.verif_status_map.keys())
 
     def clear_dof_conversion_settings(self):
         self.conversion_input_path = None
@@ -373,6 +389,7 @@ class ObstacleFAADigitialObstacleFileDB:
         self.fill_lighting()
         self.fill_hor_acc()
         self.fill_vert_acc()
+        self.fill_verif_status()
 
     def run(self):
         """Run method that performs all the real work"""
