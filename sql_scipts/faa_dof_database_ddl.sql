@@ -51,9 +51,9 @@ CREATE TABLE verif_status (
 
 CREATE TABLE obstacle (
 	rec_id serial PRIMARY KEY,
-	state_id serial NOT NULL,
+	state_id int NOT NULL,
 	obst_ident char(9) NOT NULL UNIQUE,
-	obst_type_id serial NOT NULL,
+	obst_type_id int NOT NULL,
 	lat_src char(12) NOT NULL,
 	lon_src char(13) NOT NULL,
 	agl float NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE obstacle (
 	insert_user VARCHAR(10) DEFAULT current_user,
 	modification_tmsp TIMESTAMPTZ NULL,
 	modification_user VARCHAR(10) NULL,
-	loaction geography(POINT, 4326) NOT NULL,
+	geo_location geography(POINT, 4326) NOT NULL,
     CONSTRAINT fk_obstacle_us_state
         FOREIGN KEY (state_id)
         REFERENCES us_state(state_id),
