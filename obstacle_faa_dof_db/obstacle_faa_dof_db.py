@@ -434,6 +434,7 @@ class ObstacleFAADigitialObstacleFileDB:
             self.dlg.pushButtonConvertDOF.clicked.connect(self.convert_dof)
             self.dlg.pushButtonCancel.clicked.connect(self.dlg.close)
             self.dlg.pushButtonInsertSingleObstacle.clicked.connect(self.insert_single_obstacle)
+            self.initialize_plugin_variables()
 
         # show the dialog
         self.dlg.show()
@@ -445,7 +446,6 @@ class ObstacleFAADigitialObstacleFileDB:
         self.dlg.comboBoxConversionDOFOutputFormat.setCurrentIndex(0)
         self.dlg.mQgsFileWidgetConversionDOFOutput.lineEdit().clear()
         self.dlg.checkBoxAddOutputToMap.setChecked(False)
-        self.initialize_plugin_variables()
         # Run the dialog event loop
         result = self.dlg.exec_()
         # See if OK was pressed
