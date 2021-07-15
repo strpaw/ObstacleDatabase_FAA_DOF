@@ -20,3 +20,25 @@ class ObstacleDatabaseTools:
         cur.close()
         connection.commit()
         return fetched_data
+
+    @staticmethod
+    def get_procedure_parameters(data):
+        """
+        data: dict
+        return: str
+        """
+        proc_params = ""
+        for key, value in data.items():
+            if type(value) in (int, float):
+                proc_params += "{} := {}".format(key, value) + ','
+            else:
+                proc_params += "{} := '{}'".format(key, value) + ','
+
+        return  proc_params.rstrip(',')
+
+    def execute_stored_procedure(self, query):
+        connection = self.get_database_connection()
+        cur = connection.cursor()
+        cur.execute(query)
+        cur.close()
+        connection.commit()

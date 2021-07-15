@@ -398,18 +398,26 @@ class ObstacleFAADigitialObstacleFileDB:
         obstacle["obst_type_id"] = self.obstacle_type_map[self.dlg.comboBoxObstacleType.currentText()]
         obstacle["lat_src"] = self.dlg.lineEditLatitude.text().strip()
         obstacle["lon_src"] = self.dlg.lineEditLongitude.text().strip()
-        obstacle["agl"] = self.dlg.lineEditAgl.text().strip()
-        obstacle["amsl"] = self.dlg.lineEditAmsl.text().strip()
+        obstacle["agl"] = float(self.dlg.lineEditAgl.text().strip())
+        obstacle["amsl"] = float(self.dlg.lineEditAmsl.text().strip())
         obstacle["vert_acc_code"] = self.vert_acc_map[self.dlg.comboBoxVertAcc.currentText()]
         obstacle["hor_acc_code"] = self.hor_acc_map[self.dlg.comboBoxHorlAcc.currentText()]
-        obstacle["quantity"] = self.dlg.lineEditQuantity.text().strip()
         obstacle["marking_code"] = self.marking_map[self.dlg.comboBoxMarking.currentText()]
         obstacle["lighting_code"] = self.lighting_map[self.dlg.comboBoxLighting.currentText()]
         obstacle["verif_status_code"] = self.verif_status_map[self.dlg.comboBoxVerificationStatus.currentText()]
         obstacle["city_name"] = self.dlg.lineEditCity.text().strip()
-        obstacle["faa_study_number"] = self.dlg.lineEditFAAStudyNumber.text().strip()
-        obstacle["julian_date"] = None
+        obstacle["lon_dd "] = DOFTools.coordinate_to_dd(obstacle["lon_src"])
+        obstacle["lat_dd"] = DOFTools.coordinate_to_dd(obstacle["lat_src"])
         return obstacle
+
+    def insert_single_obstacle(self):
+        data = self.get_single_obstacle_data()
+
+        proc_params = ObstacleDatabaseTools.get_procedure_parameters(data)
+        query = "CALL insert_obstacle({})".format(proc_params)
+
+        db_tools = ObstacleDatabaseTools(self.data_uri)
+        db_tools.execute_stored_procedure(query)
 
     def run(self):
         """Run method that performs all the real work"""
@@ -425,6 +433,7 @@ class ObstacleFAADigitialObstacleFileDB:
             self.dlg.comboBoxConversionDOFOutputFormat.currentIndexChanged.connect(self.set_conversion_output_format)
             self.dlg.pushButtonConvertDOF.clicked.connect(self.convert_dof)
             self.dlg.pushButtonCancel.clicked.connect(self.dlg.close)
+            self.dlg.pushButtonInsertSingleObstacle.clicked.connect(self.insert_single_obstacle)
 
         # show the dialog
         self.dlg.show()
