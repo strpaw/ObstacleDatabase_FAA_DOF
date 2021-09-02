@@ -9,6 +9,18 @@ _marking_codes = [
     "P", "W", "M", "F", "S", "N", "U"
 ]
 
+_vert_acc_codes = [
+    "A", "B", "C", "D", "E", "F", "G", "H", "I"
+]
+
+_hor_acc_codes = [
+    1, 2, 3, 4, 5, 6, 7, 8, 9
+]
+
+_verif_status = [
+    "O", "U", "N"
+]
+
 
 class DOFRawDataValidator:
 
@@ -28,12 +40,12 @@ class DOFRawDataValidator:
         self._obst_convert_functions = {
             "agl": DOFRawDataValidator.float_value_optional,
             "amsl": DOFRawDataValidator.positive_integer_required,
-            "vert_acc_code": None,
-            "hor_acc_code": None,
+            "vert_acc_code": DOFRawDataValidator.vert_acc_code_validation,
+            "hor_acc_code": DOFRawDataValidator.hor_acc_code_validation,
             "quantity": None,
             "loghting_code": DOFRawDataValidator.lighting_code_validation,
             "marking_code": DOFRawDataValidator.marking_code_validation,
-            "verif_status_code": None
+            "verif_status_code": DOFRawDataValidator.verif_status_validation
         }
 
     def _reset_parsed_data(self):
@@ -75,8 +87,29 @@ class DOFRawDataValidator:
         else:
             raise UnknownMarkingCode(value)
 
+    @staticmethod
+    def vart_acc_code_validation(value):
+        if value in _vert_acc_codes:
+            return value
+        else:
+            raise UnknownVertAccCode(value)
+
+    @staticmethod
+    def hor_acc_code_validation(value):
+        if value in _hor_acc_codes:
+            return value
+        else:
+            raise UnknownHorAccCode(value)
+
+    @staticmethod
+    def verif_status_validation(value):
+        if value in _vert_acc_codes:
+            return value
+        else:
+            raise UnknownVerifStatus(value)
+
     def convert_raw_data(self, raw_data):
-        self.reste_obstacle_parsed()
+        self._reset_parsed_data()
 
         for attribute, value in raw_data.items():
             try:
