@@ -38,6 +38,26 @@ class UnknownMarkingCode(DOFConversionBaseError):
         self.message = "Unknown marking code."
 
 
+class UnknownVertAccCode(DOFConversionBaseError):
+    """ Raised when the value cannot be converted to positive integer number """
+    def __init__(self, value):
+        self.value = value
+        self.message = "Unknown vertical accuracy code."
+
+
+class UnknownHorAccCode(DOFConversionBaseError):
+    """ Raised when the value cannot be converted to positive integer number """
+    def __init__(self, value):
+        self.value = value
+        self.message = "Unknown horizontal accuracy code."
+
+class UnknownVerifStatus(DOFConversionBaseError):
+    """ Raised when the value cannot be converted to positive integer number """
+    def __init__(self, value):
+        self.value = value
+        self.message = "Unknown verification status."
+
+
 class LongitudeConversionError(DOFConversionBaseError):
     """ Raised when the value cannot be converted to positive integer number """
     def __init__(self, value):
