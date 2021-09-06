@@ -36,3 +36,110 @@ class DOFRawDataValidatorTest(unittest.TestCase):
 
     def test_marking_code_validation_UnknownLightingCode_raised_when_not_valid_code(self):
         self.assertRaises(UnknownMarkingCode, DOFRawDataValidator.marking_code_validation, "Z")
+
+    def test_validate_raw_data_agl_is_none(self):
+
+        raw_data = {
+            "agl": "00093a",
+            "amsl": "00657",
+            "vert_acc_code": "H",
+            "hor_acc_code": 8,
+            "loghting_code": "N",
+            "marking_code": "S",
+            "verif_status_code": "O"
+        }
+
+        converted_data = {
+            "agl": None,
+            "amsl": 657,
+            "vert_acc_code": "H",
+            "hor_acc_code": 8,
+            "loghting_code": "N",
+            "marking_code": "S",
+            "verif_status_code": "O"
+        }
+
+        validator = DOFRawDataValidator()
+        self.assertEqual(converted_data, validator.validate_raw_data(raw_data))
+        self.assertEqual("Attribute agl value error. Float number required. Actual value: 00093a ",
+                         validator._err_msg)
+
+    def test_validate_raw_data_amsl_is_none(self):
+
+        raw_data = {
+            "agl": "00093",
+            "amsl": "00657a",
+            "vert_acc_code": "H",
+            "hor_acc_code": 8,
+            "loghting_code": "N",
+            "marking_code": "S",
+            "verif_status_code": "O"
+        }
+
+        converted_data = {
+            "agl": 93.0,
+            "amsl": None,
+            "vert_acc_code": "H",
+            "hor_acc_code": 8,
+            "loghting_code": "N",
+            "marking_code": "S",
+            "verif_status_code": "O"
+        }
+
+        validator = DOFRawDataValidator()
+        self.assertEqual(converted_data, validator.validate_raw_data(raw_data))
+        self.assertEqual("Attribute amsl value error. Positive integer number required. Actual value: 00657a ",
+                         validator._err_msg)
+
+    def test_validate_raw_data_vert_acc_is_none(self):
+
+        raw_data = {
+            "agl": "00093",
+            "amsl": "00657",
+            "vert_acc_code": "P",
+            "hor_acc_code": 8,
+            "loghting_code": "N",
+            "marking_code": "S",
+            "verif_status_code": "O"
+        }
+
+        converted_data = {
+            "agl": 93.0,
+            "amsl": 657,
+            "vert_acc_code": None,
+            "hor_acc_code": 8,
+            "loghting_code": "N",
+            "marking_code": "S",
+            "verif_status_code": "O"
+        }
+
+        validator = DOFRawDataValidator()
+        self.assertEqual(converted_data, validator.validate_raw_data(raw_data))
+        self.assertEqual("Attribute vert_acc_code value error. Unknown vertical accuracy code. Actual value: P ",
+                         validator._err_msg)
+
+        def test_validate_raw_data_hor_acc_is_none(self):
+            raw_data = {
+                "agl": "00093",
+                "amsl": "00657",
+                "vert_acc_code": "B",
+                "hor_acc_code": "A",
+                "loghting_code": "N",
+                "marking_code": "S",
+                "verif_status_code": "O"
+            }
+
+            converted_data = {
+                "agl": 93.0,
+                "amsl": 657,
+                "vert_acc_code": "B",
+                "hor_acc_code": None,
+                "loghting_code": "N",
+                "marking_code": "S",
+                "verif_status_code": "O"
+            }
+
+            validator = DOFRawDataValidator()
+            self.assertEqual(converted_data, validator.validate_raw_data(raw_data))
+            self.assertEqual("Attribute hor_acc_code value error. Unknown horizontal accuracy code. Actual value: B ",
+                             validator._err_msg)
