@@ -1,5 +1,5 @@
 """ Raw data from Digital Obstacle File validator/converter. """
-from .obstacle_faa_dof_db.dof_conversion_errors import *
+from obstacle_faa_dof_db.dof_utils.dof_conversion_errors import *
 
 
 _vert_acc_codes = [
