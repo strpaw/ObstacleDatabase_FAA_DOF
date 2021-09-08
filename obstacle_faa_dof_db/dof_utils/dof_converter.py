@@ -17,12 +17,12 @@ from qgis.core import (
 
 class DOFConverter:
 
-    def __init__(self, path_dof_farmat):
-        self.parser = DOFParser(path_dof_farmat)
+    def __init__(self, path_dof_format):
+        self.parser = DOFParser(path_dof_format)
 
     def convert_dof_to_csv(self, dof_path, output_path):
-        """ Cobert DOF (dat file) into CSV file.
-        Notice that data is not validated during conversion it is saved to CSV file as it is in soource in dat file.
+        """ Convert DOF (dat file) into CSV file.
+        Notice that data is not validated during conversion it is saved to CSV file as it is in source in dat file.
         param: dof_path: str
         param: output_path: str
         """
