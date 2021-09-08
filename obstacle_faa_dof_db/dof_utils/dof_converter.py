@@ -1,5 +1,6 @@
 """ Convert original Digital Obstacle File (dat format) into CSV, KML, SHP formats. """
 from obstacle_faa_dof_db.dof_utils.dof_parser import DOFParser
+from obstacle_faa_dof_db.dof_utils.dof_coordinates import dmsh_to_dd
 import csv
 from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
@@ -21,6 +22,7 @@ class DOFConverter:
 
     def convert_dof_to_csv(self, dof_path, output_path):
         """ Cobert DOF (dat file) into CSV file.
+        Notice that data is not validated during conversion it is saved to CSV file as it is in soource in dat file.
         param: dof_path: str
         param: output_path: str
         """
@@ -36,6 +38,8 @@ class DOFConverter:
                     line_nr += 1
                     if line_nr >= 5:  # Skip DOF header
                         obstacle_data = self.parser.parse_dof_line(line)
+                        obstacle_data["lon_dd"] = dmsh_to_dd(obstacle_data["longitude"], "LONGITUDE")
+                        obstacle_data["lat_dd"] = dmsh_to_dd(obstacle_data["latitude"], "LATITUDE")
                         writer.writerow(obstacle_data)
 
     @staticmethod
