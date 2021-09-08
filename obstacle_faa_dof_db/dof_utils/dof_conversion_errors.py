@@ -1,10 +1,11 @@
 """ Custom Digital Obstacle File data conversion errors. """
 
+
 class DOFConversionBaseError(Exception):
     """ Base class for other exceptions """
     def __init__(self, value):
         self.value = value
-        self.message = message
+        self.message = ""
 
     def __str__(self):
         return "{} Actual value: {}".format(self.message, self.value)
@@ -51,6 +52,7 @@ class UnknownHorAccCode(DOFConversionBaseError):
         self.value = value
         self.message = "Unknown horizontal accuracy code."
 
+
 class UnknownVerifStatus(DOFConversionBaseError):
     """ Raised when the value cannot be converted to positive integer number """
     def __init__(self, value):
@@ -65,8 +67,8 @@ class LongitudeConversionError(DOFConversionBaseError):
         self.message = "Can not convert source longitude to DD."
 
 
-class LattitiudeConversionError(DOFConversionBaseError):
+class LatitudeConversionError(DOFConversionBaseError):
     """ Raised when the value cannot be converted to positive integer number """
     def __init__(self, value):
         self.value = value
-        self.message = "Can not convert source lattitude to DD."
+        self.message = "Can not convert source latitude to DD."
