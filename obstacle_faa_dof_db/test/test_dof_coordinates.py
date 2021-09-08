@@ -18,7 +18,7 @@ class DofCoordinatesTest(unittest.TestCase):
     def test_check_hemisphere_invalid_latitude(self):
         self.assertFalse(check_hemisphere("E", "LATITUDE"))
 
-    def test_dmsh_to_dd_longitude_vaid(self):
+    def test_dmsh_to_dd_longitude_valid(self):
         longitudes = [
             ('180 00 00E', 180),
             ('180 00 00.0E', 180),
@@ -29,7 +29,7 @@ class DofCoordinatesTest(unittest.TestCase):
         for lon_dmsh, lon_dd in longitudes:
             self.assertAlmostEqual(lon_dd, dmsh_to_dd(lon_dmsh, "LONGITUDE"))
 
-    def test_dmsh_to_dd_longitude_vaid(self):
+    def test_dmsh_to_dd_longitude_invalid(self):
         longitudes = [
             ('180 00 00N', 180),
             ('180 00 00.0S', 180),
@@ -40,7 +40,7 @@ class DofCoordinatesTest(unittest.TestCase):
         for lon_dmsh, lon_dd in longitudes:
             self.assertIsNone(dmsh_to_dd(lon_dmsh, "LONGITUDE"))
 
-    def test_dmsh_to_dd_latitude_vaid(self):
+    def test_dmsh_to_dd_latitude_valid(self):
         latitudes = [
             ('90 00 00N', 90),
             ('90 00 00.0S', -90),
@@ -51,7 +51,7 @@ class DofCoordinatesTest(unittest.TestCase):
         for lat_dmsh, lat_dd in latitudes:
             self.assertAlmostEqual(lat_dd, dmsh_to_dd(lat_dmsh, "LATITUDE"))
 
-    def test_dmsh_to_dd_latitude_vaid(self):
+    def test_dmsh_to_dd_latitude_invalid(self):
         latitudes = [
             '180 00 00E',
             '180 00 00.0W',
