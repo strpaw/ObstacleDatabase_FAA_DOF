@@ -1,6 +1,6 @@
-""" Digitl Obstacle File parser """
-
+""" Digital Obstacle File parser """
 import json
+
 
 class DOFParser:
 
@@ -10,12 +10,12 @@ class DOFParser:
         self._set_dof_format()
 
     def _get_dof_format(self):
-        """ Load Digitial Obstacle File format data from json file. """
+        """ Load Digital Obstacle File format data from json file. """
         with open(self._path_dof_format, 'r') as f:
             return json.load(f)
 
     def _set_dof_format(self):
-        """ Assign Digitial Obstacle File format - begin/end columns to obstacle attributes/fields. """
+        """ Assign Digital Obstacle File format - begin/end columns to obstacle attributes/fields. """
         dof_format = self._get_dof_format()
         for field in dof_format['fields']:
             field_name = field["field_name"]
@@ -27,7 +27,7 @@ class DOFParser:
                 self._dof_format[field_name] = [column_from - 1, column_to]
 
     def parse_dof_line(self, line):
-        """ Extract data from Digital Obstacle File line accroding to given DOF format.
+        """ Extract data from Digital Obstacle File line according to given DOF format.
         param: line: str, line of Digital Obstacle File
         return: dict
         """
