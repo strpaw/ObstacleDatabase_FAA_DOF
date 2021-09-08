@@ -47,7 +47,6 @@ class DOFRawDataValidator:
         except (TypeError, ValueError):
             raise FloatNumberRequired(value)
 
-
     @staticmethod
     def positive_integer_required(value):
         try:
