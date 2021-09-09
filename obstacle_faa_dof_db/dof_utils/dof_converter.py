@@ -1,6 +1,6 @@
 """ Convert original Digital Obstacle File (dat format) into CSV, KML, SHP formats. """
 from obstacle_faa_dof_db.dof_utils.dof_parser import DOFParser
-from obstacle_faa_dof_db.dof_utils.dof_coordinates import dmsh_to_dd
+from obstacle_faa_dof_db.dof_utils.dof_coordinates import longitude_to_dms, latitude_to_dms
 import csv
 from qgis.PyQt.QtCore import QVariant
 from qgis.core import (
@@ -20,6 +20,21 @@ class DOFConverter:
     def __init__(self, path_dof_format):
         self.parser = DOFParser(path_dof_format)
 
+    @staticmethod
+    def get_coordinates_dd(obstacle_data):
+        """ Append coordinates in DD to parsed obstacle data.
+        :param obstacle_data: dict
+        :return: dict
+        """
+        try:
+            lon_dd = longitude_to_dms(obstacle_data["longitude"])
+            lat_dd = latitude_to_dms(obstacle_data["latitude"])
+        except Exception as e:
+            pass  # TODO: Add logging to DOF import log
+        else:
+            coordinates = {"lon_dd": lon_dd, "lat_dd": lat_dd}
+            return coordinates
+
     def convert_dof_to_csv(self, dof_path, output_path):
         """ Convert DOF (dat file) into CSV file.
         Notice that data is not validated during conversion it is saved to CSV file as it is in source in dat file.
@@ -38,9 +53,10 @@ class DOFConverter:
                     line_nr += 1
                     if line_nr >= 5:  # Skip DOF header
                         obstacle_data = self.parser.parse_dof_line(line)
-                        obstacle_data["lon_dd"] = dmsh_to_dd(obstacle_data["longitude"], "LONGITUDE")
-                        obstacle_data["lat_dd"] = dmsh_to_dd(obstacle_data["latitude"], "LATITUDE")
-                        writer.writerow(obstacle_data)
+                        coordinates_dd = DOFConverter.get_coordinates_dd(obstacle_data)
+                        if coordinates_dd:
+                            obstacle_data.update(coordinates_dd)
+                            writer.writerow(obstacle_data)
 
     @staticmethod
     def get_fields():
