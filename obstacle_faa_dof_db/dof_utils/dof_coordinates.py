@@ -1,3 +1,6 @@
+from obstacle_faa_dof_db.dof_utils.dof_conversion_errors import LongitudeConversionError, LatitudeConversionError
+
+
 def check_hemisphere(hem, coord_type):
     """
     param: hem: string, hemisphere character
@@ -29,3 +32,35 @@ def dmsh_to_dd(src_coord, coord_type):
         if h in ['W', 'S']:
             dd = - dd
         return dd
+
+
+def longitude_to_dms(lon_src):
+    """
+    :param lon_src: str
+    :return: float
+    """
+    try:
+        dd = dmsh_to_dd(lon_src, "LONGITUDE")
+    except (ValueError, TypeError):
+        raise LongitudeConversionError(lon_src)
+    else:
+        if dd is None:
+            raise LongitudeConversionError(lon_src)
+        else:
+            return dd
+
+
+def latitude_to_dms(lat_src):
+    """
+    :param lat_src: str
+    :return: float
+    """
+    try:
+        dd = dmsh_to_dd(lat_src, "LATITUDE")
+    except (ValueError, TypeError):
+        raise LongitudeConversionError(lat_src)
+    else:
+        if dd is None:
+            raise LatitudeConversionError(lat_src)
+        else:
+            return dd
