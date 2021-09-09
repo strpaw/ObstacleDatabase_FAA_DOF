@@ -106,9 +106,9 @@ class DOFConverter:
         :param output_path: str
         :param extension: str, shp, kml
         """
-        fields = DOFTools.get_fields()
-        fnames = fields.names()
-        writer = DOFTools.get_writer(fields, output_path, extension)
+        fields = DOFConverter.get_fields()
+        field_names = fields.names()
+        writer = DOFConverter.get_writer(fields, output_path, extension)
 
         feat = QgsFeature()
         with open(dof_path, 'r') as input_dof:
@@ -117,8 +117,11 @@ class DOFConverter:
                 line_nr += 1
                 if line_nr >= 5:
                     obstacle_data = self.parser.parse_dof_line(line)
-                    feat.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(float(obstacle_data["lon_dd"]),
-                                                                        float(obstacle_data["lat_dd"]))))
-                    feat.setAttributes([obstacle_data[name] for name in fnames])
-                    writer.addFeature(feat)
+                    coordinates_dd = DOFConverter.get_coordinates_dd(obstacle_data)
+                    if coordinates_dd:
+                        obstacle_data.update(coordinates_dd)
+                        feat.setGeometry(QgsGeometry.fromPointXY(QgsPointXY(float(obstacle_data["lon_dd"]),
+                                                                            float(obstacle_data["lat_dd"]))))
+                        feat.setAttributes([obstacle_data[name] for name in field_names])
+                        writer.addFeature(feat)
         del writer
