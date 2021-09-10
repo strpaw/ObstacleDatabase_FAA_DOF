@@ -33,7 +33,8 @@ import os.path
 from qgis.core import *
 from qgis.gui import *
 from .obstacle_database_tools import ObstacleDatabaseTools
-from .dof_tools import *
+from obstacle_faa_dof_db.dof_utils.dof_converter import DOFConverter
+from obstacle_faa_dof_db.dof_utils.dof_coordinates import longitude_to_dms, latitude_to_dms
 
 
 class ObstacleFAADigitialObstacleFileDB:
@@ -368,13 +369,14 @@ class ObstacleFAADigitialObstacleFileDB:
         if self.is_conversion_input_valid():
             plugin_dir = os.path.dirname(__file__)
             path_dof_format = os.path.join(plugin_dir, 'dof_format.json')
-            dof_tool = DOFTools(path_dof_format)
+            converter = DOFConverter(path_dof_format)
+
             if self.conversion_output_format == "csv":
-                dof_tool.convert_dof_to_csv(self.conversion_input_path, self.conversion_output_path)
+                converter.convert_dof_to_csv(self.conversion_input_path, self.conversion_output_path)
             else:
-                dof_tool.convert_dof_to_geographic_formats(self.conversion_input_path,
-                                                           self.conversion_output_path,
-                                                           self.conversion_output_format)
+                converter.convert_dof_to_geographic_formats(self.conversion_input_path,
+                                                            self.conversion_output_path,
+                                                            self.conversion_output_format)
         if self.dlg.checkBoxAddOutputToMap.isChecked():
             layer = self.get_converted_layer()
             QgsProject.instance().addMapLayer(layer)
@@ -406,8 +408,8 @@ class ObstacleFAADigitialObstacleFileDB:
         obstacle["lighting_code"] = self.lighting_map[self.dlg.comboBoxLighting.currentText()]
         obstacle["verif_status_code"] = self.verif_status_map[self.dlg.comboBoxVerificationStatus.currentText()]
         obstacle["city_name"] = self.dlg.lineEditCity.text().strip()
-        obstacle["lon_dd "] = DOFTools.coordinate_to_dd(obstacle["lon_src"])
-        obstacle["lat_dd"] = DOFTools.coordinate_to_dd(obstacle["lat_src"])
+        obstacle["lon_dd "] = longitude_to_dms(obstacle["lon_src"])
+        obstacle["lat_dd"] = latitude_to_dms(obstacle["lat_src"])
         return obstacle
 
     def insert_single_obstacle(self):
