@@ -5,6 +5,7 @@ class ObstacleDatabaseTools:
 
     def __init__(self, uri):
         self.uri = uri
+        self.error = None
 
     def get_database_connection(self):
         return psycopg2.connect(host=self.uri.host(),
@@ -39,6 +40,11 @@ class ObstacleDatabaseTools:
     def execute_stored_procedure(self, query):
         connection = self.get_database_connection()
         cur = connection.cursor()
-        cur.execute(query)
-        cur.close()
-        connection.commit()
+        try:
+            cur.execute(query)
+            cur.close()
+            connection.commit()
+        except psycopg2.Error as e:
+            self.error = e
+        finally:
+            cur.close()
