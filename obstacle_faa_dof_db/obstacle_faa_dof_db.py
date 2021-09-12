@@ -23,7 +23,7 @@
 """
 from qgis.PyQt.QtCore import QSettings, QTranslator, QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction, QWidget, QMessageBox
+from qgis.PyQt.QtWidgets import QAction, QWidget, QMessageBox, QErrorMessage
 
 # Initialize Qt resources from file resources.py
 from .resources import *
@@ -420,6 +420,9 @@ class ObstacleFAADigitialObstacleFileDB:
 
         db_tools = ObstacleDatabaseTools(self.data_uri)
         db_tools.execute_stored_procedure(query)
+        if db_tools.error:
+            error_dialog = QErrorMessage()
+            error_dialog.showMessage(str(db_tools.error))
 
     def run(self):
         """Run method that performs all the real work"""
