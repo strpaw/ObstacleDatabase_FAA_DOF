@@ -71,6 +71,6 @@ BEGIN
         INTO state_name
         FROM us_state
         WHERE us_state.state_id = state_id;
-        RAISE NOTICE 'Obstacle outside % state!', state_name;
+        RAISE EXCEPTION 'Obstacle outside % state!', state_name;
     END IF;
 END; $$
