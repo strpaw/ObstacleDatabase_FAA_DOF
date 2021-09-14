@@ -53,6 +53,8 @@ class ObstacleFAADigitialObstacleFileDB:
         # initialize plugin directory
         self.plugin_dir = os.path.dirname(__file__)
 
+        self.import_dof_input_path = None
+        self.import_dof_log_path = None
         self.conversion_input_path = None
         self.conversion_output_format = None
         self.conversion_output_path = None
@@ -424,6 +426,48 @@ class ObstacleFAADigitialObstacleFileDB:
             error_dialog = QErrorMessage()
             error_dialog.showMessage(str(db_tools.error))
 
+    @staticmethod
+    def create_log_file(path):
+        """ Create empty log file.
+        :param path: str
+        """
+        with open(path, 'w'):
+            pass
+
+    # Import DOF
+
+    def is_import_dof_valid(self):
+        """ Check if data for Import Obstacle is valid.
+        :return: bool
+        """
+        check_msg = ""
+
+        self.import_dof_input_path = self.dlg.mQgsFileWidgetInputImportDOF.filePath()
+        self.import_dof_log_path = self.dlg.mQgsFileWidgetImportLog.filePath()
+
+        if not os.path.isfile(self.import_dof_input_path):
+            check_msg += "Digital Obstacle File required!\n"
+
+        if not self.import_dof_log_path.strip():
+            check_msg += "Import log file required!"
+        else:
+            try:
+                ObstacleFAADigitialObstacleFileDB.create_log_file(self.import_dof_log_path)
+            except OSError:
+                check_msg += "Unable to create import log file!"
+
+        if check_msg:
+            QMessageBox.critical(QWidget(), "Message", check_msg)
+        else:
+            return True
+
+    def import_dof(self):
+        self.import_dof_input_path = None
+        self.import_dof_log_path = None
+
+        if self.is_import_dof_valid():
+            pass
+
     def run(self):
         """Run method that performs all the real work"""
 
@@ -432,8 +476,11 @@ class ObstacleFAADigitialObstacleFileDB:
         if self.first_start == True:
             self.first_start = False
             self.dlg = ObstacleFAADigitialObstacleFileDBDialog()
-            self.dlg.mQgsFileWidgetDigitalObstacleFile.setFilter('*.dat')
+            # Import DOF file
+            self.dlg.mQgsFileWidgetInputImportDOF.setFilter('*.dat')
             self.dlg.mQgsFileWidgetImportLog.setFilter("*.log")
+            self.dlg.pushButtonImportDOF.clicked.connect(self.import_dof)
+
             self.dlg.mQgsFileWidgetConversionDOFInput.setFilter('*.dat')
             self.dlg.comboBoxConversionDOFOutputFormat.currentIndexChanged.connect(self.set_conversion_output_format)
             self.dlg.pushButtonConvertDOF.clicked.connect(self.convert_dof)
@@ -444,7 +491,7 @@ class ObstacleFAADigitialObstacleFileDB:
         # show the dialog
         self.dlg.show()
         self.dlg.tabWidget.setCurrentIndex(0)
-        self.dlg.mQgsFileWidgetDigitalObstacleFile.lineEdit().clear()
+        self.dlg.mQgsFileWidgetInputImportDOF.lineEdit().clear()
         self.dlg.mQgsFileWidgetImportLog.lineEdit().clear()
         self.dlg.pushButtonShowImportLogFile.setEnabled(False)
         self.dlg.mQgsFileWidgetConversionDOFInput.lineEdit().clear()

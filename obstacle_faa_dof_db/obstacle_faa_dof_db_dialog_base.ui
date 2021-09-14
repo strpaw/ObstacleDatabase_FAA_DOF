@@ -23,13 +23,13 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
      <string>Import DOF File</string>
     </attribute>
-    <widget class="QgsFileWidget" name="mQgsFileWidgetDigitalObstacleFile">
+    <widget class="QgsFileWidget" name="mQgsFileWidgetInputImportDOF">
      <property name="geometry">
       <rect>
        <x>150</x>
@@ -92,6 +92,19 @@
      </property>
      <property name="text">
       <string>Show Import log</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButtonImportDOF">
+     <property name="geometry">
+      <rect>
+       <x>850</x>
+       <y>420</y>
+       <width>93</width>
+       <height>28</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Import</string>
      </property>
     </widget>
    </widget>
