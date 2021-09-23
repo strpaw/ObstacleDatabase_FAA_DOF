@@ -48,3 +48,14 @@ class ObstacleDatabaseTools:
             self.error = e
         finally:
             cur.close()
+
+    def execute_sql_query(self, connection, query):
+        self.error = None
+        cur = connection.cursor()
+        try:
+            cur.execute(query)
+        except psycopg2.Error as e:
+            self.error = e
+        finally:
+            cur.close()
+            connection.commit()
