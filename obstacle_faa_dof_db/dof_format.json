@@ -32,17 +32,17 @@
       "column_to": 34
     },
     {
-      "field_name": "latitude",
+      "field_name": "lat_src",
       "column_from": 36,
       "column_to": 47
     },
     {
-      "field_name": "longitude",
+      "field_name": "lon_src",
       "column_from": 49,
       "column_to": 61
     },
     {
-      "field_name": "obstacle_type",
+      "field_name": "obst_type",
       "column_from": 63,
       "column_to": 80
     },
@@ -82,7 +82,7 @@
       "column_to": 102
     },
     {
-      "field_name": "FAA_study_number",
+      "field_name": "faa_study_number",
       "column_from": 104,
       "column_to": 117
     },
