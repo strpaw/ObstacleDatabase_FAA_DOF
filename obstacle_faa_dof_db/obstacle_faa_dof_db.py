@@ -35,6 +35,7 @@ from qgis.gui import *
 from .obstacle_database_tools import ObstacleDatabaseTools
 from obstacle_faa_dof_db.dof_utils.dof_converter import DOFConverter
 from obstacle_faa_dof_db.dof_utils.dof_coordinates import longitude_to_dms, latitude_to_dms
+from obstacle_faa_dof_db.dof_utils.dof_importer import DOFImporter
 
 
 class ObstacleFAADigitialObstacleFileDB:
@@ -466,7 +467,10 @@ class ObstacleFAADigitialObstacleFileDB:
         self.import_dof_log_path = None
 
         if self.is_import_dof_valid():
-            pass
+            plugin_dir = os.path.dirname(__file__)
+            path_dof_format = os.path.join(plugin_dir, 'dof_format.json')
+            importer = DOFImporter(path_dof_format)
+            importer.import_dof(self.import_dof_input_path, self.data_uri, self.import_dof_log_path)
 
     def run(self):
         """Run method that performs all the real work"""

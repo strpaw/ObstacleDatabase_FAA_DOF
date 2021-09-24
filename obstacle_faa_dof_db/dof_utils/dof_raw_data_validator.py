@@ -1,5 +1,6 @@
 """ Raw data from Digital Obstacle File validator/converter. """
 from obstacle_faa_dof_db.dof_utils.dof_conversion_errors import *
+from obstacle_faa_dof_db.dof_utils.dof_coordinates import longitude_to_dms, latitude_to_dms
 
 
 _vert_acc_codes = [
@@ -50,7 +51,7 @@ class DOFRawDataValidator:
     @staticmethod
     def positive_integer_required(value):
         try:
-            i = int(value)
+            i = float(value)
         except (TypeError, ValueError):
             raise PositiveIntegerNumberRequired(value)
         else:
@@ -83,7 +84,7 @@ class DOFRawDataValidator:
     @staticmethod
     def hor_acc_code_validation(value):
         if int(value) in _hor_acc_codes:
-            return value
+            return int(value)
         else:
             raise UnknownHorAccCode(value)
 
@@ -108,5 +109,22 @@ class DOFRawDataValidator:
                         self._err_msg += "| Attribute {} value error. {} ".format(attribute, e)
                     else:
                         self._err_msg += "Attribute {} value error. {} ".format(attribute, e)
+
+        try:
+            parsed_data["lon_dd"] = longitude_to_dms(raw_data["lon_src"])
+        except Exception as e:
+            self._err_msg += "| Attribute lon_src value error. {} ".format(e)
+
+        try:
+            parsed_data["lat_dd"] = latitude_to_dms(raw_data["lat_src"])
+        except Exception as e:
+            self._err_msg += "| Attribute lat_src value error. {} ".format(e)
+
+        parsed_data["obst_ident"] = raw_data["oas_code"] + '-' + raw_data["obstacle_number"]
+        parsed_data["obst_type_id"] = 1
+        parsed_data["state_id"] = int(raw_data["oas_code"])
+        parsed_data["city_name"] = raw_data["city_name"]
+        parsed_data["lon_src"] = raw_data["lon_src"]
+        parsed_data["lat_src"] = raw_data["lat_src"]
 
         return parsed_data
