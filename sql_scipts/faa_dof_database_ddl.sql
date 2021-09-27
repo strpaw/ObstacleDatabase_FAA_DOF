@@ -95,6 +95,56 @@ CREATE TABLE obstacle (
     REFERENCES verif_status(verif_status_code)
 );
 
+CREATE TABLE history_obstacle (
+	h_rec_id serial PRIMARY KEY,
+	rec_id int NULL,
+	state_id int NOT NULL,
+	obst_ident char(9) NOT NULL,
+	obst_type_id int NOT NULL,
+	lat_src char(12) NOT NULL,
+	lon_src char(13) NOT NULL,
+	agl float NOT NULL,
+	amsl float,
+	vert_acc_code char(1) NOT NULL,
+	hor_acc_code int NOT NULL,
+	quantity int NULL,
+	marking_code char(1) NOT NULL,
+	lighting_code char(1) NOT NULL,
+	verif_status_code char(1) NOT NULL,
+	city_name varchar(20) NULL,
+	faa_study_number char(14) NULL,
+	julian_date char(7) NULL,
+	eff_from TIMESTAMPTZ NOT NULL,
+	eff_till TIMESTAMPTZ NOT NULL,
+	modification_user VARCHAR(10) NULL,
+	geo_location geography(POINT, 4326) NOT NULL,
+	CONSTRAINT fk_hobstacle_obtsalce
+	    FOREIGN KEY (rec_id)
+	    REFERENCES obstacle(rec_id)
+	    ON DELETE SET NULL,
+    CONSTRAINT fk_hobstacle_us_state
+        FOREIGN KEY (state_id)
+        REFERENCES us_state(state_id),
+    CONSTRAINT fk_hobstacle_obst_type
+        FOREIGN KEY (obst_type_id)
+        REFERENCES obstacle_type(obst_type_id),
+    CONSTRAINT fk_hobstacle_vert_acc
+        FOREIGN KEY (vert_acc_code)
+        REFERENCES vert_acc(vert_acc_code),
+    CONSTRAINT fk_hobstacle_hor_acc
+        FOREIGN KEY (hor_acc_code)
+        REFERENCES hor_acc(hor_acc_code),
+    CONSTRAINT fk_hobstacle_marking
+        FOREIGN KEY (marking_code)
+        REFERENCES marking(marking_code),
+    CONSTRAINT fk_hobstacle_lighting
+        FOREIGN KEY (lighting_code)
+        REFERENCES lighting(lighting_code),
+    CONSTRAINT fk_hobstacle_verif_status
+        FOREIGN KEY (verif_status_code)
+    REFERENCES verif_status(verif_status_code)
+);
+
 CREATE INDEX idx_obst_ident 
 ON obstacle USING btree (obst_ident);
 CREATE INDEX idx_obst_lon_src
