@@ -471,6 +471,13 @@ class ObstacleFAADigitialObstacleFileDB:
             path_dof_format = os.path.join(plugin_dir, 'dof_format.json')
             importer = DOFImporter(path_dof_format)
             importer.import_dof(self.import_dof_input_path, self.data_uri, self.import_dof_log_path)
+            self.dlg.pushButtonShowImportLogFile.setEnabled(True)
+
+    def disable_show_import_log(self):
+        self.dlg.pushButtonShowImportLogFile.setEnabled(False)
+
+    def open_import_log(self):
+        os.startfile(self.import_dof_log_path)
 
     def run(self):
         """Run method that performs all the real work"""
@@ -480,10 +487,13 @@ class ObstacleFAADigitialObstacleFileDB:
         if self.first_start == True:
             self.first_start = False
             self.dlg = ObstacleFAADigitialObstacleFileDBDialog()
+
             # Import DOF file
             self.dlg.mQgsFileWidgetInputImportDOF.setFilter('*.dat')
             self.dlg.mQgsFileWidgetImportLog.setFilter("*.log")
             self.dlg.pushButtonImportDOF.clicked.connect(self.import_dof)
+            self.dlg.pushButtonShowImportLogFile.clicked.connect(self.open_import_log)
+            self.dlg.mQgsFileWidgetImportLog.fileChanged.connect(self.disable_show_import_log)
 
             self.dlg.mQgsFileWidgetConversionDOFInput.setFilter('*.dat')
             self.dlg.comboBoxConversionDOFOutputFormat.currentIndexChanged.connect(self.set_conversion_output_format)
